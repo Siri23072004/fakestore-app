@@ -1,25 +1,27 @@
 import { useState, useEffect } from 'react';
-import {Product} from '../types/product';
+import type { Product } from '../types/product';
 
 export const useProducts = () => {
-  // Storing the product list in a state
-  const [productList, setProductList] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetching data from Fake Store API
-    fetch('https://fakestoreapi.com/products')
-      .then((res) => res.json())
-      .then((data) => {
-        setProductList(data);
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('https://fakestoreapi.com/products');
+        if (!response.ok) throw new Error('Failed to fetch products');
+        const data = await response.json();
+        setProducts(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Something went wrong');
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => {
-        // Handling API errors
-        console.error("Error fetching products:", err);
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchProducts();
   }, []);
 
-  return { productList, loading };
+  return { products, loading, error };
 };
