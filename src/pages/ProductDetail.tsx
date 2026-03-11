@@ -16,8 +16,6 @@ const ProductDetail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
-  
-  // Selection States
   const [selectedSize, setSelectedSize] = useState<string>("M");
   const [selectedColor, setSelectedColor] = useState<string>("Black");
 
@@ -30,8 +28,8 @@ const ProductDetail = () => {
       });
   }, [id]);
 
-  if (loading) return <p className="p-10 text-center">Loading...</p>;
-  if (!product) return <p>Product not found</p>;
+  if (loading) return <p className="p-10 text-center">Loading product...</p>;
+  if (!product) return <p className="p-10 text-center">Product not found</p>;
 
   return (
     <div className="max-w-6xl mx-auto p-6 md:flex gap-12">
@@ -51,10 +49,18 @@ const ProductDetail = () => {
 
         <p className="text-gray-600">{product.description}</p>
 
-        {/* Conditional Sections based on Category */}
+        {/* Wishlist & Delivery Info */}
+        <div className="flex items-center gap-4">
+          <button className="border border-red-500 text-red-500 px-6 py-2 rounded-lg hover:bg-red-50 transition">
+            ♥ Wishlist
+          </button>
+          <div className={`px-4 py-2 rounded-lg ${product.price > 50 ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}`}>
+            {product.price > 50 ? "✓ Free Delivery" : "Delivery Charge: $5.00"}
+          </div>
+        </div>
+
+        {/* Conditional Category Sections */}
         <div className="border-t pt-4 space-y-4">
-          
-          {/* 1. CLOTHING: Size & Color */}
           {(product.category.includes("clothing")) && (
             <div>
               <p className="font-semibold">Size:</p>
@@ -72,18 +78,16 @@ const ProductDetail = () => {
             </div>
           )}
 
-          {/* 2. JEWELRY: Metal & Quantity */}
           {product.category === "jewelery" && (
-            <div className="bg-gray-100 p-4 rounded text-sm">
+            <div className="bg-gray-100 p-4 rounded text-sm space-y-1">
               <p><strong>Base Metal:</strong> Sterling Silver / Gold Plated</p>
               <p><strong>Net Quantity:</strong> 1 Unit</p>
               <p><strong>Size:</strong> Free Size (Adjustable)</p>
             </div>
           )}
 
-          {/* 3. ELECTRONICS: Highlights & Warranty */}
           {product.category === "electronics" && (
-            <div className="bg-gray-100 p-4 rounded text-sm">
+            <div className="bg-gray-100 p-4 rounded text-sm space-y-1">
               <p className="font-bold">Product Highlights:</p>
               <ul className="list-disc ml-4">
                 <li>Best-in-class performance</li>
@@ -94,7 +98,18 @@ const ProductDetail = () => {
           )}
         </div>
 
-        <button className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700">Add to Cart</button>
+        {/* Reviews Section */}
+        <div className="border-t pt-4">
+          <h2 className="text-lg font-bold mb-2">Customer Reviews</h2>
+          <div className="space-y-3 text-sm text-gray-600">
+            <p><strong>Rahul:</strong> ⭐⭐⭐⭐⭐ "Very satisfied with the quality!"</p>
+            <p><strong>Sneha:</strong> ⭐⭐⭐⭐ "Good product, fast shipping."</p>
+          </div>
+        </div>
+
+        <button className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 w-full md:w-auto">
+          Add to Cart
+        </button>
       </div>
     </div>
   );
