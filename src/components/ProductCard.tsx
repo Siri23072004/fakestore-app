@@ -6,8 +6,8 @@ interface Props {
 
 const ProductCard = ({ product }: Props) => {
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-lg">
-      <div className="aspect-square overflow-hidden rounded-md bg-gray-100 group-hover:opacity-75">
+    <div className="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-lg w-full">
+      <div className="aspect-square overflow-hidden rounded-md bg-gray-100 group-hover:opacity-75 flex item-center justify-center">
         <img
           src={product.image}
           alt={product.title}

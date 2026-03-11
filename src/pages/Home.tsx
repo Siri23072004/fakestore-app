@@ -37,6 +37,8 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
+
+
         {/* Header Section */}
         <div className="mb-10 text-center">
           <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl">
@@ -47,12 +49,14 @@ const Home = () => {
           </p>
         </div>
 
-        {/* Responsive Product Grid */}
-        <div className="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        
+
+       {/* Responsive Product Grid */}
+<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+  {products.map((product) => (
+    <ProductCard key={product.id} product={product} />
+  ))}
+</div>
       </div>
     </div>
   );
