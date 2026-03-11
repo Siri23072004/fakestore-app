@@ -12,129 +12,89 @@ interface Product {
   rating: { rate: number; count: number };
 }
 
-const sizes = ["S", "M", "L", "XL"];
-const colors = ["Red", "Blue", "Green", "Black"];
-
 const ProductDetail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedSize, setSelectedSize] = useState<string>("");
-  const [selectedColor, setSelectedColor] = useState<string>("");
+  
+  // Selection States
+  const [selectedSize, setSelectedSize] = useState<string>("M");
+  const [selectedColor, setSelectedColor] = useState<string>("Black");
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const res = await fetch(`https://fakestoreapi.com/products/${id}`);
-        const data = await res.json();
+    fetch(`https://fakestoreapi.com/products/${id}`)
+      .then((res) => res.json())
+      .then((data) => {
         setProduct(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
         setLoading(false);
-      }
-    };
-    fetchProduct();
+      });
   }, [id]);
 
-  if (loading) return <p className="p-10 text-center">Loading product...</p>;
-  if (!product) return <p className="p-10 text-center">Product not found</p>;
-
-  const addToCart = () => {
-    alert(`${product.title} added to cart! Size: ${selectedSize || "-"} Color: ${selectedColor || "-"}`);
-    // Later: integrate with cart API
-  };
+  if (loading) return <p className="p-10 text-center">Loading...</p>;
+  if (!product) return <p>Product not found</p>;
 
   return (
-    <div className="max-w-6xl mx-auto p-6 md:flex gap-8 bg-gray-50">
-      {/* Image */}
-      <div className="flex-1 flex items-center justify-center bg-gray-100 p-4 rounded-lg">
-        <img src={product.image} alt={product.title} className="h-80 object-contain" />
+    <div className="max-w-6xl mx-auto p-6 md:flex gap-12">
+      <div className="flex-1 flex justify-center bg-gray-50 p-6 rounded-xl">
+        <img src={product.image} alt={product.title} className="h-96 object-contain" />
       </div>
 
-      {/* Details */}
-      <div className="flex-1 space-y-4">
+      <div className="flex-1 space-y-6">
         <h1 className="text-3xl font-bold">{product.title}</h1>
-        <p className="text-xl text-blue-600 font-semibold">${product.price}</p>
-        <p className="text-gray-700">{product.description}</p>
-        <p className="text-sm text-gray-500">Category: {product.category}</p>
-
-        {/* Rating */}
-        <div className="flex items-center space-x-2">
-          {Array.from({ length: 5 }, (_, i) => (
-            <span key={i} className={i < Math.round(product.rating.rate) ? "text-yellow-400" : "text-gray-300"}>
-              ★
-            </span>
-          ))}
-          <span className="text-gray-600 text-sm">({product.rating.count} reviews)</span>
+        <p className="text-2xl text-blue-600 font-bold">${product.price}</p>
+        
+        {/* Rating Section */}
+        <div className="text-yellow-500">
+          {'★'.repeat(Math.round(product.rating.rate))} 
+          <span className="text-gray-500 ml-2">({product.rating.count} reviews)</span>
         </div>
 
-        {/* Size Selection (only for clothes) */}
-        {(product.category === "men's clothing" || product.category === "women's clothing") && (
-          <div>
-            <p className="text-sm font-medium text-gray-700 mb-1">Size:</p>
-            <div className="flex gap-2">
-              {sizes.map((size) => (
-                <button
-                  key={size}
-                  onClick={() => setSelectedSize(size)}
-                  className={`px-3 py-1 border rounded ${
-                    selectedSize === size
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-                  }`}
-                >
-                  {size}
-                </button>
-              ))}
+        <p className="text-gray-600">{product.description}</p>
+
+        {/* Conditional Sections based on Category */}
+        <div className="border-t pt-4 space-y-4">
+          
+          {/* 1. CLOTHING: Size & Color */}
+          {(product.category.includes("clothing")) && (
+            <div>
+              <p className="font-semibold">Size:</p>
+              <div className="flex gap-2">
+                {["S", "M", "L", "XL"].map(s => (
+                  <button key={s} onClick={() => setSelectedSize(s)} className={`px-4 py-1 border ${selectedSize === s ? 'bg-black text-white' : ''}`}>{s}</button>
+                ))}
+              </div>
+              <p className="font-semibold mt-2">Color:</p>
+              <div className="flex gap-2">
+                {["Red", "Blue", "Black"].map(c => (
+                  <button key={c} onClick={() => setSelectedColor(c)} className={`px-4 py-1 border ${selectedColor === c ? 'bg-black text-white' : ''}`}>{c}</button>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Color Selection */}
-        <div>
-          <p className="text-sm font-medium text-gray-700 mb-1">Color:</p>
-          <div className="flex gap-2">
-            {colors.map((color) => (
-              <button
-                key={color}
-                onClick={() => setSelectedColor(color)}
-                className={`px-3 py-1 border rounded ${
-                  selectedColor === color
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-                }`}
-              >
-                {color}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Buttons */}
-        <div className="flex gap-4">
-          <button onClick={addToCart} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-            Add to Cart
-          </button>
-          <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-            Buy Now
-          </button>
-        </div>
-
-        {/* Reviews & Comments */}
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-2">Reviews & Comments</h2>
-          <div className="space-y-3">
-            <div className="bg-gray-100 p-3 rounded">
-              <p className="font-medium">Alice</p>
-              <p>Great product, works exactly as expected!</p>
+          {/* 2. JEWELRY: Metal & Quantity */}
+          {product.category === "jewelery" && (
+            <div className="bg-gray-100 p-4 rounded text-sm">
+              <p><strong>Base Metal:</strong> Sterling Silver / Gold Plated</p>
+              <p><strong>Net Quantity:</strong> 1 Unit</p>
+              <p><strong>Size:</strong> Free Size (Adjustable)</p>
             </div>
-            <div className="bg-gray-100 p-3 rounded">
-              <p className="font-medium">Bob</p>
-              <p>Good value for money, would buy again.</p>
+          )}
+
+          {/* 3. ELECTRONICS: Highlights & Warranty */}
+          {product.category === "electronics" && (
+            <div className="bg-gray-100 p-4 rounded text-sm">
+              <p className="font-bold">Product Highlights:</p>
+              <ul className="list-disc ml-4">
+                <li>Best-in-class performance</li>
+                <li>Energy efficient design</li>
+              </ul>
+              <p className="mt-2 text-red-600 font-semibold">Warranty: 1 Year Manufacturer Warranty</p>
             </div>
-          </div>
+          )}
         </div>
+
+        <button className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700">Add to Cart</button>
       </div>
     </div>
   );
